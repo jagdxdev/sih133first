@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="GramHealth - Offline-First Rural Public Healthcare PWA for ASHA Workers, PHC Doctors, and District Administrators">
+  <meta name="theme-color" content="#0d9488">
+  
+  <title>GramHealth — Rural Public Healthcare PWA</title>
+
+  <!-- Web App Manifest for PWA Installability -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- App Mount Root Container -->
+  <div id="app">
+    <!-- Initial Loading Fallback before JS initializes -->
+    <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0f172a; color: #ffffff; font-family: system-ui, sans-serif;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🩺</div>
+      <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">GramHealth Rural Care</h2>
+      <p style="color: #94a3b8; font-size: 0.9rem;">Initializing IndexedDB & Offline Service Worker...</p>
+    </div>
+  </div>
+
+  <!-- JavaScript Module Dependencies (Loaded sequentially in logical dependency order) -->
+  
+  <!-- 1. Database Storage Layer -->
+  <script src="js/db.js"></script>
+
+  <!-- 2. Mock Backend REST API Connector -->
+  <script src="js/api.js"></script>
+
+  <!-- 3. Offline Sync Engine -->
+  <script src="js/sync.js"></script>
+
+  <!-- 4. Clinical Digital Triage Algorithm -->
+  <script src="js/triage.js"></script>
+
+  <!-- 5. Authentication & User Roles -->
+  <script src="js/auth.js"></script>
+
+  <!-- 6. Role-Specific Workflow Controllers -->
+  <script src="js/asha.js"></script>
+  <script src="js/doctor.js"></script>
+  <script src="js/admin.js"></script>
+
+  <!-- 7. Main Application Orchestrator -->
+  <script src="js/app.js"></script>
+
+</body>
+</html>
