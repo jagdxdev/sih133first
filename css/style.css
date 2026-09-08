@@ -808,3 +808,139 @@ input:focus, select:focus, textarea:focus {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================================================
+   PWA Install Banner & iOS Install Modal
+   ========================================================================== */
+
+/* Bottom install banner */
+#pwa-install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-top: 2px solid #0d9488;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+  animation: bannerSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #f1f5f9;
+}
+
+@keyframes bannerSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.pwa-banner-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.pwa-banner-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pwa-banner-text strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.pwa-banner-text span {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.pwa-banner-install {
+  flex-shrink: 0;
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #0d9488, #0284c7);
+  color: #ffffff;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 10px rgba(13, 148, 136, 0.4);
+}
+
+.pwa-banner-install:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.5);
+}
+
+.pwa-banner-dismiss {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #94a3b8;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.pwa-banner-dismiss:hover {
+  background: rgba(255,255,255,0.1);
+  color: #f8fafc;
+}
+
+/* iOS install steps inside modal */
+.ios-install-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ios-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.ios-step-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0d9488, #0284c7);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+/* Ensure banner doesn't overlap page content */
+@media (max-width: 600px) {
+  #pwa-install-banner {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+  .pwa-banner-text strong { font-size: 0.85rem; }
+  .pwa-banner-install { padding: 8px 12px; font-size: 0.8rem; }
+}
+

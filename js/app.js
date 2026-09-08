@@ -8,7 +8,33 @@
  * 2. Initializes IndexedDB database & Offline Sync Engine.
  * 3. Controls Role-Based Navigation & View Switching (ASHA, Doctor, Admin).
  * 4. Manages global modal popups, toasts, and DOM utilities.
+ * 5. PWA Install Prompt (Android/Chrome) & iOS install instructions.
  */
+
+// ─── PWA Install Prompt Global Handler ───────────────────────────────────────
+let _pwaInstallPrompt = null;   // Holds the deferred beforeinstallprompt event
+let _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+let _isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches
+                        || window.navigator.standalone === true;
+
+// Capture the install prompt (Android / Chrome / Edge)
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _pwaInstallPrompt = e;
+  // Show the install banner if it was injected already
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) banner.style.display = 'flex';
+  // Activate any install buttons
+  document.querySelectorAll('.pwa-install-btn').forEach(btn => btn.style.display = 'inline-flex');
+});
+
+// Hide banner once the app is installed
+window.addEventListener('appinstalled', () => {
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) banner.remove();
+  document.querySelectorAll('.pwa-install-btn').forEach(btn => btn.remove());
+  _pwaInstallPrompt = null;
+});
 
 const app = {
   activeView: 'dashboard',
@@ -33,8 +59,114 @@ const app = {
     // 3. Initialize Sync Engine
     syncEngine.init();
 
-    // 4. Render Interface based on Authentication State
+    // 4. Inject PWA install banner into DOM (hidden until event fires)
+    this.injectInstallBanner();
+
+    // 5. Render Interface based on Authentication State
     this.renderAppShell();
+  },
+
+  /**
+   * Injects the bottom PWA install banner into the page body.
+   * Shown automatically when browser fires beforeinstallprompt.
+   * Also shows on iOS with Safari-specific instructions.
+   */
+  injectInstallBanner() {
+    if (_isInStandaloneMode) return; // Already installed — skip
+    if (document.getElementById('pwa-install-banner')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'pwa-install-banner';
+
+    if (_isIOS) {
+      // iOS cannot use beforeinstallprompt — show static Safari instructions
+      banner.style.display = 'flex';
+      banner.innerHTML = `
+        <div class="pwa-banner-icon">📲</div>
+        <div class="pwa-banner-text">
+          <strong>Install GramHealth</strong>
+          <span>Tap <b>Share</b> <span style="font-size:1.1em;">⎙</span> → <b>"Add to Home Screen"</b> in Safari</span>
+        </div>
+        <button class="pwa-banner-dismiss" onclick="this.closest('#pwa-install-banner').remove()" title="Dismiss">✕</button>
+      `;
+    } else {
+      // Android / Chrome — hidden until beforeinstallprompt fires
+      banner.style.display = 'none';
+      banner.innerHTML = `
+        <div class="pwa-banner-icon">📲</div>
+        <div class="pwa-banner-text">
+          <strong>Install GramHealth</strong>
+          <span>Add to your home screen for offline access</span>
+        </div>
+        <button class="pwa-banner-install" id="pwa-banner-install-btn" onclick="app.triggerInstallPrompt()">Install App</button>
+        <button class="pwa-banner-dismiss" onclick="this.closest('#pwa-install-banner').remove()" title="Dismiss">✕</button>
+      `;
+    }
+
+    document.body.appendChild(banner);
+  },
+
+  /**
+   * Triggers the native browser PWA install dialog (Android/Chrome/Edge)
+   */
+  async triggerInstallPrompt() {
+    if (_pwaInstallPrompt) {
+      _pwaInstallPrompt.prompt();
+      const { outcome } = await _pwaInstallPrompt.userChoice;
+      console.log('[PWA Install] User choice:', outcome);
+      if (outcome === 'accepted') {
+        this.showToast('✅ GramHealth installed successfully!', 'success');
+        const banner = document.getElementById('pwa-install-banner');
+        if (banner) banner.remove();
+        _pwaInstallPrompt = null;
+      }
+    } else if (_isIOS) {
+      this.showIOSInstallModal();
+    } else {
+      this.showToast('Open this app in Chrome on Android to install it.', 'info');
+    }
+  },
+
+  /**
+   * Shows a modal with step-by-step iOS install instructions
+   */
+  showIOSInstallModal() {
+    this.openModalRaw(`
+      <div class="modal-overlay" onclick="if(event.target===this)app.closeAllModals()">
+        <div class="modal-card" style="max-width:360px;">
+          <div class="modal-header">
+            <h3>📲 Install on iPhone / iPad</h3>
+            <button class="modal-close" onclick="app.closeAllModals()">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="ios-install-steps">
+              <div class="ios-step">
+                <div class="ios-step-num">1</div>
+                <div>Open this page in <strong>Safari</strong> browser<br><small style="color:var(--text-muted)">(Chrome on iOS cannot install PWAs)</small></div>
+              </div>
+              <div class="ios-step">
+                <div class="ios-step-num">2</div>
+                <div>Tap the <strong>Share</strong> button <span style="font-size:1.3em;">⎙</span> at the bottom of Safari</div>
+              </div>
+              <div class="ios-step">
+                <div class="ios-step-num">3</div>
+                <div>Scroll down and tap <strong>"Add to Home Screen"</strong></div>
+              </div>
+              <div class="ios-step">
+                <div class="ios-step-num">4</div>
+                <div>Tap <strong>"Add"</strong> in the top right corner</div>
+              </div>
+            </div>
+            <div style="margin-top:1rem;padding:0.75rem;background:#f0fdf4;border-radius:8px;font-size:0.85rem;color:#16a34a;">
+              ✅ GramHealth will appear on your Home Screen like a native app!
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" onclick="app.closeAllModals()">Got it!</button>
+          </div>
+        </div>
+      </div>
+    `);
   },
 
   /**
@@ -100,6 +232,12 @@ const app = {
             <button class="nav-item" id="nav-sync" onclick="app.triggerManualSync()">
               <span>🔄</span> Force Manual Sync
             </button>
+            ${!_isInStandaloneMode ? `
+            <button class="nav-item pwa-install-btn" id="sidebar-install-btn"
+              onclick="app.triggerInstallPrompt()"
+              style="display:none;background:linear-gradient(135deg,rgba(13,148,136,0.2),rgba(2,132,199,0.2));border:1px solid rgba(13,148,136,0.4);">
+              <span>📲</span> Install App
+            </button>` : ''}
           </nav>
 
           <!-- Sidebar Footer Logout -->
@@ -155,6 +293,15 @@ const app = {
    * Returns HTML Template for Login View
    */
   getLoginViewTemplate() {
+    // Determine install button label for login card
+    const showInstallBtn = !_isInStandaloneMode;
+    const installBtnHtml = showInstallBtn ? `
+      <button type="button" class="btn pwa-install-btn" id="login-install-btn"
+        onclick="app.triggerInstallPrompt()"
+        style="width:100%;margin-top:6px;background:linear-gradient(135deg,#0d9488,#0284c7);color:#fff;display:none;">
+        📲 Install App on This Device
+      </button>` : '';
+
     return `
       <!-- Sticky Offline Banner -->
       <div id="offline-banner"></div>
@@ -184,6 +331,8 @@ const app = {
               🔐 Sign In to Workstation
             </button>
           </form>
+
+          ${installBtnHtml}
 
           <!-- Quick Access Credentials Helper -->
           <div class="auth-credentials-hint">
