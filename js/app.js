@@ -313,7 +313,6 @@ const app = {
               <span>🩺</span> Sarthi
             </div>
             <h1>Rural Public Healthcare</h1>
-            <p>Offline-First Workstation for ASHA Workers, Doctors & Admins</p>
           </div>
 
           <form id="login-form" onsubmit="app.handleLoginSubmit(event)">
