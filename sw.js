@@ -11,7 +11,7 @@
  */
 
 // Unique Cache Identifier - Versioned to force update when app files change
-const CACHE_NAME = 'gramhealth-v1.0.0';
+const CACHE_NAME = 'sarthi-v1.0.0';
 
 // Core Application Shell assets required for offline rendering
 const ASSETS_TO_CACHE = [

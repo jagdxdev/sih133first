@@ -1,7 +1,7 @@
 {
-  "name": "GramHealth Rural Care PWA",
-  "short_name": "GramHealth",
-  "description": "Offline-First Rural Public Healthcare Information System for ASHA Workers, PHC Doctors & District Admins",
+  "name": "Sarthi Rural Care",
+  "short_name": "Sarthi",
+  "description": "Offline-First Rural Public Healthcare for ASHA Workers, PHC Doctors & District Admins",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",

@@ -158,7 +158,7 @@ const app = {
               </div>
             </div>
             <div style="margin-top:1rem;padding:0.75rem;background:#f0fdf4;border-radius:8px;font-size:0.85rem;color:#16a34a;">
-              ✅ GramHealth will appear on your Home Screen like a native app!
+              ✅ Sarthi will appear on your Home Screen like a native app!
             </div>
           </div>
           <div class="modal-footer">
@@ -211,7 +211,7 @@ const app = {
         <aside class="app-sidebar">
           <div class="sidebar-header">
             <div class="brand-title">
-              <span>🩺</span> GramHealth PWA
+              <span>🩺</span> Sarthi
             </div>
           </div>
 
@@ -310,9 +310,9 @@ const app = {
         <div class="auth-card">
           <div class="auth-header">
             <div class="logo-badge">
-              <span>🩺</span> GramHealth
+              <span>🩺</span> Sarthi
             </div>
-            <h1>Rural Public Healthcare PWA</h1>
+            <h1>Rural Public Healthcare</h1>
             <p>Offline-First Workstation for ASHA Workers, Doctors & Admins</p>
           </div>
 
